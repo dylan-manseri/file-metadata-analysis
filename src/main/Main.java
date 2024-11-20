@@ -1,17 +1,21 @@
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+package main;
+import classe.Arguments;
+import exception.TooMuchArgumentsException;
+
+import exception.TooMuchArgumentsException;
+
+import java.nio.file.NoSuchFileException;
 
 //classe constructeur methode
 
 public class Main {
     public static void main(String[] args) throws TooMuchArgumentsException {
         try{
-            if(args.length>2){
+            if(args.length>3){
                 throw new TooMuchArgumentsException();
             }
             Arguments a = new Arguments(args);
-        }catch(TooMuchArgumentsException e){
+        }catch(TooMuchArgumentsException | NoSuchFileException e){
             System.out.println(e.getMessage());
         }
         /*if(args[0].equals("-h") || args[0].equals("--help")){
