@@ -4,6 +4,7 @@ import exception.TooMuchArgumentsException;
 
 import exception.TooMuchArgumentsException;
 
+import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 
 //classe constructeur methode
@@ -11,12 +12,14 @@ import java.nio.file.NoSuchFileException;
 public class Main {
     public static void main(String[] args) throws TooMuchArgumentsException {
         try{
-            if(args.length>3){
+            if(args.length>5){
                 throw new TooMuchArgumentsException();
             }
             Arguments a = new Arguments(args);
         }catch(TooMuchArgumentsException | NoSuchFileException e){
             System.out.println(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         /*if(args[0].equals("-h") || args[0].equals("--help")){
             Argument a=new Argument("-h");

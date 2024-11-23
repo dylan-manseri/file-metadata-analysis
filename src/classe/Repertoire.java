@@ -1,12 +1,23 @@
 package classe;
 import exception.WrongArgumentException;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.*;
 
-public class Repertoire {
+/**
+ * Cette classe gère les repertoires entrés par l'utilisateur ou ceux rencontré lors de parcours de tableaux.
+ * Elle permet d'obtenir une arborescence simplifiée/detaillée de l'organisation d'un repertoire.
+ * Elle permet d'obtenir les statistiques d'un repertoire et de ses sous fichiers.
+ *
+ * @author Dylan Manseri
+ * @version 0.1
+ */
+
+public class Repertoire implements EstAnalysable {
     private final Path chemin;
     private final File rep;
 
@@ -22,37 +33,107 @@ public class Repertoire {
         }
     }
 
-    public void listFile(boolean estDansUnDossier) throws WrongArgumentException, NoSuchFileException {
-        File[] fichiers = rep.listFiles();
-        String ROUGE = Couleur.ROUGE;
-        String RESET = Couleur.RESET;
+    public Repertoire(File rep) throws NoSuchFileException, WrongArgumentException {
+        this.rep=rep;
+        this.chemin=rep.toPath();
+        if(!Files.exists(chemin)){
+            throw new NoSuchFileException("Chemin non existants, taper -h ou --help pour de l'aide");
+        }
+        if(rep.isFile()){
+            throw new WrongArgumentException(rep.getName()+" est un fichier, taper -f pour les manipuler\n " +
+                    "taper -h ou --help pour de l'aide");
+        }
+    }
 
-        if(fichiers!=null){
-            System.out.println("\nle repertoire "+chemin.getFileName()+" a "+ROUGE+fichiers.length+RESET+" fichier/s :");
-            int i=0;
+    public Repertoire(String chemin) throws NoSuchFileException {
+        this.chemin= Paths.get(chemin).toAbsolutePath().normalize();
+        rep = new File(chemin);
+    }
 
-            for (File fichier : fichiers) {
-                Path p = Paths.get(fichier.getAbsolutePath());
-                p=p.normalize();
-                i++;
-
-                if(estDansUnDossier){
-                    System.out.println("\n"+fichier.getName()+":");
-                }
-                else{
-                    System.out.println("--------------------------------------------------");
-                    System.out.println("\n"+ROUGE+i+". "+fichier.getName()+RESET+":\n");
-                }
-
-                if(fichier.isFile()){
-                    Fichier f = new Fichier(p);
-                    f.printStat();
-                }
-                if(fichier.isDirectory()){
-                    Repertoire rep = new Repertoire(p);
-                    rep.listFile(true);
-                }
+    public void printArborescence(File[] fichiers, int i, boolean estDansUnDossier, String s){
+        if(i==0 && !estDansUnDossier){
+            System.out.println("\nArborescence simplifié de "+s+"\n");
+            System.out.println(s);
+            s="";
+        }
+        if(i==fichiers.length){
+            return;
+        }
+        else if(i==fichiers.length-1){
+            File fichier=fichiers[i];
+            System.out.println(s+"└──"+fichier.getName());
+        }
+        else{
+            File fichier=fichiers[i];
+            System.out.println(s+"├──"+fichier.getName());
+            if(fichier.isDirectory()){
+                File[] fichierInterne = fichier.listFiles();
+                printArborescence(fichierInterne,0,true,s+"│   ");
             }
         }
+        printArborescence(fichiers,i+1,false,s);
+    }
+
+    public void printArborescence() throws IOException {
+        File[] fichiers = rep.listFiles();
+        printArborescence(fichiers,0,false,rep.getName());
+    }
+
+    public void printArborescenceDetail(File[] fichiers, int i, boolean estDansUnDossier, String s) throws IOException {
+        if(i==0 && !estDansUnDossier){
+            System.out.println("\nArborescence detaillee de "+s+"\n");
+            System.out.println(s);
+            s="";
+        }
+        if(i==fichiers.length){
+            return;
+        }
+        else if(i==fichiers.length-1){
+            File fichier=fichiers[i];
+            if(fichier.isFile()){
+                Fichier f = new Fichier(fichier);
+                System.out.println(s+"└──"+fichier.getName()+f.printStat());
+            }
+            else{
+                Repertoire rep = new Repertoire(fichier);
+                System.out.println(s+"└──"+fichier.getName()+rep.printStat());
+            }
+
+        }
+        else{
+            File fichier=fichiers[i];
+            if(fichier.isFile()){
+                Fichier f = new Fichier(fichier);
+                System.out.println(s+"├──"+fichier.getName()+f.printStat());
+            }
+            if(fichier.isDirectory()){
+                Repertoire rep = new Repertoire(fichier);
+                System.out.println(s+"├──"+fichier.getName()+rep.printStat());
+                File[] fichierInterne = fichier.listFiles();
+                printArborescenceDetail(fichierInterne,0,true,s+"│   ");
+            }
+            System.out.println(s+"│");
+        }
+        printArborescenceDetail(fichiers,i+1,false,s);
+    }
+
+    public void printArborescenceDetail() throws IOException {
+        File[] fichiers = rep.listFiles();
+        printArborescenceDetail(fichiers,0,false,rep.getName());
+    }
+
+
+    public String printStat() throws IOException {
+        BasicFileAttributes attr = Files.readAttributes(chemin, BasicFileAttributes.class);
+        String s=" est un repertoire ";
+        s+="| "+"Date de creation : "+attr.creationTime().toString().substring(0,10);
+        s+=" | "+"Date de modification : "+attr.lastModifiedTime().toString().substring(0,10);
+        s+=" | "+"Taille : "+attr.size()+" octets |";
+        return s;
+    }
+
+    public String printInfo(){
+        String s="a";
+        return s;
     }
 }

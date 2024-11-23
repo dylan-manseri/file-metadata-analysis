@@ -1,22 +1,38 @@
 package classe;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.NoSuchFileException;
+import java.io.IOException;
+
+/**
+ * Cette classe centralise l'utilisation des arguments pour simplifié la lecture du code
+ * Elle prend les arguments entrés par l'utilisateur et execute la methode associé
+ *
+ * @author Dylan Manseri
+ * @version 0.1
+ */
 
 public class Arguments {
-    private final String[] arguments;
 
-    public Arguments(String[] args) throws NoSuchFileException {
-        this.arguments=args;
-        if(this.arguments[0].equals("--help") || this.arguments[0].equals("-h")){
+    /**
+     *
+     * @param args
+     * @throws IOException
+     */
+
+    public Arguments(String[] args) throws IOException {
+
+        if(args[0].equals("--help") || args[0].equals("-h")){
             help();
         }
-        else if(this.arguments[0].equals("-d") || this.arguments[0].equals("--directory")){
-            Path p = Paths.get(this.arguments[1]).toAbsolutePath().normalize();
-            String nom = p.getFileName().toString();
-            Repertoire rep=new Repertoire(p);
-            if((this.arguments.length > 2) && (this.arguments[2].equals("-l") || this.arguments[2].equals("--list"))){
-                rep.listFile(false);
+        else if(args[0].equals("-d") || args[0].equals("--directory")){
+            Repertoire rep=new Repertoire(args[1]);
+            if((args.length > 2) && (args[2].equals("-l") || args[2].equals("--list"))){
+                if(args.length>3 && args[3].equals("--stat")){
+                    rep.printArborescenceDetail();
+                }
+                else{
+                    rep.printArborescence();
+                    System.out.println("Pour avoir les statistiques en plus ajouter l'option --stat");
+                }
+
             }
         }
     }

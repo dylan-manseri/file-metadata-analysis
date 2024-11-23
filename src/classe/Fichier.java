@@ -4,7 +4,15 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.io.File;
 
-public class Fichier {
+/**
+ * Cette classe gere l'utilisation des fichiers entré par l'utilisateur
+ * Elle permet d'obtenir ses statistiques et ses informations plus détaillés
+ *
+ * @author Dylan Manseri
+ * @version 0.1
+ */
+
+public class Fichier implements EstAnalysable {
     private final Path chemin;
     private final File f;
 
@@ -20,29 +28,47 @@ public class Fichier {
         }
     }
 
-    public void printStat(){
+    public Fichier(File f) throws NoSuchFileException, WrongArgumentException {
+        this.f=f;
+        this.chemin=f.toPath();
+        if(!Files.exists(chemin)){
+            throw new NoSuchFileException("Chemin non existants, taper -h ou --help pour de l'aide");
+        }
+        if(f.isDirectory()){
+            throw new WrongArgumentException(f.getName()+" est un repertoire, taper -d pour les manipuler \n" +
+                    "taper -h ou --help pour de l'aide");
+        }
+    }
+
+    public String printStat(){
         try{
+            String mere = chemin.getParent().getFileName().toString();
             String nom = chemin.getFileName().toString();
             String type = nom.substring(nom.length()-3);
-            String mess="Le fichier "+nom+" est ";
+            String mess=" est ";
 
             if(type.equals("txt") || type.equals("csv")){
-                mess+="un fichier texte.";
+                mess+="un fichier texte";
             }
             else if(type.equals("jpg") || type.equals("png") || type.equals("webp")){
-                mess+="un fichier image.";
+                mess+="un fichier image";
             }
-
-            System.out.println(mess+"\nVoici ses statistiques :");
             String dateCreation = Files.getAttribute(chemin,"creationTime").toString().substring(0,10);
             String dateModification = Files.getLastModifiedTime(chemin).toString().substring(0,10);
             long taille = Files.size(chemin);
 
-            System.out.println("- Date de creation : "+dateCreation);
-            System.out.println("- Date de la derniere modification : "+dateModification);
-            System.out.println("- Taille : "+taille+" octets");
+            String s="| Date de creation : "+dateCreation+" ";
+            s+="| Date de la derniere modification : "+dateModification;
+            s+="| Taille : "+taille+" octets |";
+            return mess+" dans "+mere+"->"+s;
         } catch(IOException e){
             System.out.println("erreur");
         }
+        return null;
+    }
+
+    public String printInfo(){
+        String s="a";
+        return s;
     }
 }
