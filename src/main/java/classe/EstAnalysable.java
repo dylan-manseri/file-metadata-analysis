@@ -1,4 +1,6 @@
 package classe;
+import com.drew.imaging.ImageProcessingException;
+import exception.WrongArgumentException;
 
 import java.io.IOException;
 
@@ -11,5 +13,5 @@ import java.io.IOException;
 
 public interface EstAnalysable {
     public String printStat() throws IOException;
-    public String printInfo();
+    public String printInfo() throws WrongArgumentException, ImageProcessingException, IOException;
 }

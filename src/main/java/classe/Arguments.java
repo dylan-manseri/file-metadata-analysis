@@ -1,5 +1,9 @@
 package classe;
+import com.drew.imaging.ImageProcessingException;
+import exception.TooMuchArgumentsException;
+import exception.WrongArgumentException;
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 
 /**
  * Cette classe centralise l'utilisation des arguments pour simplifié la lecture du code
@@ -17,7 +21,7 @@ public class Arguments {
      * @throws IOException
      */
 
-    public Arguments(String[] args) throws IOException {
+    public Arguments(String[] args) throws IOException, WrongArgumentException, TooMuchArgumentsException, ImageProcessingException {
 
         if(args[0].equals("--help") || args[0].equals("-h")){
             help();
@@ -32,7 +36,12 @@ public class Arguments {
                     rep.printArborescence();
                     System.out.println("Pour avoir les statistiques en plus ajouter l'option --stat");
                 }
-
+            }
+        }
+        else if(args[0].equals("-f") || args[0].equals("--file")){
+            Fichier fic=new Fichier(args[1]);
+            if ((args.length > 2) && args[2].equals("--info")){
+                fic.printInfo();
             }
         }
     }
@@ -52,6 +61,4 @@ public class Arguments {
         s1+="--snapshot : Utilisé pour realiser une sauvegarde d'un fichier et une comparaison avec un autre\n";
         System.out.println(s1);
     }
-
-
 }

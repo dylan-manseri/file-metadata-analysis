@@ -9,9 +9,9 @@ import classe.Couleur;
  * @version 0.1
  */
 
-public class WrongArgumentException extends RuntimeException {
+public class WrongArgumentException extends Exception{
     public WrongArgumentException(String message) {
 
-        super(Couleur.ROUGE+"Erreur : "+message + Couleur.RESET);
+        super(Couleur.ROUGE+"Erreur : "+ message + Couleur.RESET);
     }
 }

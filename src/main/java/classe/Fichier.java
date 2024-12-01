@@ -1,8 +1,13 @@
 package classe;
+import com.drew.imaging.ImageProcessingException;
 import exception.WrongArgumentException;
 import java.io.IOException;
 import java.nio.file.*;
 import java.io.File;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Tag;
 
 /**
  * Cette classe gere l'utilisation des fichiers entré par l'utilisateur
@@ -40,6 +45,18 @@ public class Fichier implements EstAnalysable {
         }
     }
 
+    public Fichier(String chemin) throws NoSuchFileException, WrongArgumentException {
+        this.chemin= Paths.get(chemin).toAbsolutePath().normalize();
+        f = new File(chemin);
+        if(!Files.exists(this.chemin)){
+            throw new WrongArgumentException("Chemin non existants, taper -h ou --help pour de l'aide");
+        }
+        if(f.isDirectory()){
+            throw new WrongArgumentException(f.getName()+" est un repertoire, taper -d pour les manipuler " +
+                    "taper -h ou --help pour de l'aide");
+        }
+    }
+
     public String printStat(){
         try{
             String mere = chemin.getParent().getFileName().toString();
@@ -67,7 +84,19 @@ public class Fichier implements EstAnalysable {
         return null;
     }
 
-    public String printInfo(){
+    public String printInfo() throws WrongArgumentException, ImageProcessingException, IOException {
+        String nom = chemin.getFileName().toString();
+        String type = nom.substring(nom.length()-3);
+        if(!(type.equals("jpg") || type.equals("png") || type.equals("webp"))){
+            throw new WrongArgumentException("Le fichier entré n'est pas une image, taper -h ou --help pour de l'aide");
+        }
+        Metadata metadata = ImageMetadataReader.readMetadata(f);
+        for (Directory directory : metadata.getDirectories()) {
+            for (Tag tag : directory.getTags()) {
+                // 4. Afficher le nom et la valeur de chaque tag (métadonnée)
+                System.out.println(tag.getTagName() + " : " + tag.getDescription());
+            }
+        }
         String s="a";
         return s;
     }

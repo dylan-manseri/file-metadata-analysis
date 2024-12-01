@@ -21,14 +21,14 @@ public class Repertoire implements EstAnalysable {
     private final Path chemin;
     private final File rep;
 
-    public Repertoire(Path chemin) throws NoSuchFileException {
+    public Repertoire(Path chemin) throws WrongArgumentException {
         if(!Files.exists(chemin)){
-            throw new NoSuchFileException("Chemin non existants, taper -h ou --help pour de l'aide");
+            throw new WrongArgumentException("Chemin non existants, taper -h ou --help pour de l'aide");
         }
         this.chemin=chemin;
         rep = new File(chemin.toString());
         if(rep.isFile()){
-            throw new WrongArgumentException(rep.getName()+" est un fichier, taper -f pour les manipuler\n " +
+            throw new WrongArgumentException(rep.getName()+" est un fichier, taper -f pour les manipuler " +
                     "taper -h ou --help pour de l'aide");
         }
     }
@@ -45,9 +45,16 @@ public class Repertoire implements EstAnalysable {
         }
     }
 
-    public Repertoire(String chemin) throws NoSuchFileException {
+    public Repertoire(String chemin) throws NoSuchFileException, WrongArgumentException {
         this.chemin= Paths.get(chemin).toAbsolutePath().normalize();
         rep = new File(chemin);
+        if(!Files.exists(this.chemin)){
+            throw new WrongArgumentException("Chemin non existants, taper -h ou --help pour de l'aide");
+        }
+        if(rep.isFile()){
+            throw new WrongArgumentException(rep.getName()+" est un fichier, taper -f pour les manipuler\n " +
+                    "taper -h ou --help pour de l'aide");
+        }
     }
 
     public void printArborescence(File[] fichiers, int i, boolean estDansUnDossier, String s){
@@ -62,6 +69,10 @@ public class Repertoire implements EstAnalysable {
         else if(i==fichiers.length-1){
             File fichier=fichiers[i];
             System.out.println(s+"└──"+fichier.getName());
+            if(fichier.isDirectory()){
+                File[] fichierInterne = fichier.listFiles();
+                printArborescence(fichierInterne,0,true,s+"│   ");
+            }
         }
         else{
             File fichier=fichiers[i];
@@ -74,12 +85,12 @@ public class Repertoire implements EstAnalysable {
         printArborescence(fichiers,i+1,false,s);
     }
 
-    public void printArborescence() throws IOException {
+    public void printArborescence() {
         File[] fichiers = rep.listFiles();
         printArborescence(fichiers,0,false,rep.getName());
     }
 
-    public void printArborescenceDetail(File[] fichiers, int i, boolean estDansUnDossier, String s) throws IOException {
+    public void printArborescenceDetail(File[] fichiers, int i, boolean estDansUnDossier, String s) throws IOException, WrongArgumentException {
         if(i==0 && !estDansUnDossier){
             System.out.println("\nArborescence detaillee de "+s+"\n");
             System.out.println(s);
@@ -97,8 +108,9 @@ public class Repertoire implements EstAnalysable {
             else{
                 Repertoire rep = new Repertoire(fichier);
                 System.out.println(s+"└──"+fichier.getName()+rep.printStat());
+                File[] fichierInterne = fichier.listFiles();
+                printArborescenceDetail(fichierInterne,0,true,s+"│   ");
             }
-
         }
         else{
             File fichier=fichiers[i];
@@ -117,7 +129,7 @@ public class Repertoire implements EstAnalysable {
         printArborescenceDetail(fichiers,i+1,false,s);
     }
 
-    public void printArborescenceDetail() throws IOException {
+    public void printArborescenceDetail() throws IOException, WrongArgumentException {
         File[] fichiers = rep.listFiles();
         printArborescenceDetail(fichiers,0,false,rep.getName());
     }
