@@ -6,7 +6,7 @@ import java.io.IOException;
 
 //classe constructeur methode
 
-public class Main {
+public class Cli {
     public static void main(String[] args) throws WrongArgumentException, TooMuchArgumentsException, IOException{
         try{
             if(args.length>5){

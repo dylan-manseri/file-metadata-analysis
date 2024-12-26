@@ -21,7 +21,7 @@ import com.drew.metadata.Metadata;
  * @version 0.1
  */
 
-public class Fichier implements EstAnalysable {
+public class Fichier {
     private final Path chemin;
     private final File f;
 
@@ -97,7 +97,7 @@ public class Fichier implements EstAnalysable {
         String type = nom.substring(nom.length() - 4);
         String type1 = nom.substring(nom.length() - 5);
         if (!(type.equals(".jpg") || type.equals(".png") || type1.equals(".webp") || type1.equals(".jpeg"))) {
-            throw new WrongArgumentException("Le fichier entré n'est pas une image, taper -h ou --help pour de l'aide");
+            throw new WrongArgumentException("Le fichier entre n'est pas une image, taper -h ou --help pour de l'aide");
         }
         Metadata metadata = ImageMetadataReader.readMetadata(f);
 

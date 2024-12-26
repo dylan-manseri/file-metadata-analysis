@@ -38,7 +38,7 @@ public class Sauvegarde {
         File rep = new File(chemin);
         if(!rep.exists()){
             if(rep.mkdir()){
-                System.out.println("Dossier save crée avec succés dans votre repertoire courant");
+                System.out.println("Dossier save cree avec succes dans votre repertoire courant");
             }
             else{
                 throw new WrongArgumentException("Erreur lors de la creation du fichier save");
@@ -57,7 +57,7 @@ public class Sauvegarde {
             fic = new File(chemin);
             if(!fic.exists()) {
                 if(fic.createNewFile()) {
-                    System.out.println("Sauvegarde du fichier crée avec succée dans le dossier dédié");
+                    System.out.println("Sauvegarde du fichier cree avec succee dans le dossier dedie");
                     creation=true;
                 } else {
                     throw new WrongArgumentException("Erreur lors de la creation du fichier save");

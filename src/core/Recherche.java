@@ -18,7 +18,7 @@ public class Recherche {
     public Recherche(String o, String d) throws IOException, ImageProcessingException, WrongArgumentException {
         this.option1 =o;
         this.donnee1 =d;
-        File dossier = new File ("..");
+        File dossier = new File (".");
         File[] fichiers = dossier.listFiles();
         if(fichiers==null){
             throw new WrongArgumentException("Ce fichier est vide, recherche impossible");
@@ -35,17 +35,17 @@ public class Recherche {
                     }
                 }
                 if(trouve){
-                    System.out.println("1 fichiers trouvé : "+ res);
+                    System.out.println("1 fichiers image trouve : "+ res);
                 }
                 else{
-                    System.out.println("Aucun fichier trouvé");
+                    System.out.println("Aucun fichier trouve");
                 }
             }
             case "--year" -> {
                 ArrayList<Path> result = new ArrayList<>();
                 result= rechercheParAnnee(donnee1,fichiers,0,result);
                 Iterator<Path> it = result.iterator();
-                System.out.println(result.size()+" fichiers trouvees en "+ donnee1 +" :");
+                System.out.println(result.size()+" fichiers trouvees images en "+ donnee1 +" :");
                 while(it.hasNext()){
                     System.out.println(it.next().getFileName());
                 }
@@ -55,14 +55,14 @@ public class Recherche {
                 result= rechercheParDate(donnee1,fichiers,0,result);
                 int taille = result.size();
                 if(taille>0){
-                    System.out.println(result.size()+" fichiers trouvees le "+ donnee1 +" :");
+                    System.out.println(result.size()+" fichiers images trouvees le "+ donnee1 +" :");
                     Iterator<Path> it = result.iterator();
                     while(it.hasNext()){
                         System.out.println(it.next().getFileName());
                     }
                 }
                 else{
-                    System.out.println("Aucune fichier trouvé le "+ donnee1);
+                    System.out.println("Aucune fichier image trouve le "+ donnee1);
                     System.out.println("Attention le format de date attendu est YEAR-MONTH-DAY");
                 }
 
@@ -77,14 +77,14 @@ public class Recherche {
                     result = rechercheParDim(largeur,hauteur,fichiers,0,result);
                     int taille = result.size();
                     if(taille>0){
-                        System.out.println(taille+" fichiers trouvé de taille>= "+ donnee1 +" :");
+                        System.out.println(taille+" fichiers image trouve de dimension >= "+ donnee1 +" :");
                         Iterator<Path> it = result.iterator();
                         while(it.hasNext()){
                             System.out.println(it.next().getFileName());
                         }
                     }
                     else{
-                        System.out.println(taille+" fichiers trouvé de taille >= "+ donnee1);
+                        System.out.println(taille+" fichiers images trouve de taille >= "+ donnee1);
                     }
                 }
                 else{
@@ -132,7 +132,7 @@ public class Recherche {
             result1 = rechercheParDimAnnee(largeur, hauteur, donnee1, result1);
             int taille = result1.size();
             if(taille>0){
-                System.out.println(taille+" fichiers trouvé de taille >= "+ donnee2 +" datant de "+donnee1+" :");
+                System.out.println(taille+" fichiers trouve de taille >= "+ donnee2 +" datant de "+donnee1+" :");
                 Iterator<Path> it = result1.iterator();
                 while(it.hasNext()){
                     System.out.println(it.next().getFileName());
