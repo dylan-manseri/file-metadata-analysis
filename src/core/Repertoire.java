@@ -1,7 +1,6 @@
 package core;
 import exception.WrongArgumentException;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -198,10 +197,6 @@ public class Repertoire{
             h.put(".webp",v);
         }
         return h;
-    }
-
-    public void printInfo(){
-        String s="a";
     }
 
     public String getName(){

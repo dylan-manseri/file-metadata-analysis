@@ -2,7 +2,6 @@ package core;
 import core.save.Compare;
 import core.save.Sauvegarde;
 import exception.WrongArgumentException;
-
 import java.io.File;
 import java.io.IOException;
 
