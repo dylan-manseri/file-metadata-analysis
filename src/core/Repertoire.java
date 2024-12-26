@@ -1,4 +1,4 @@
-package classe;
+package core;
 import exception.WrongArgumentException;
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +45,7 @@ public class Repertoire implements EstAnalysable {
         }
     }
 
-    public Repertoire(String chemin) throws NoSuchFileException, WrongArgumentException {
+    public Repertoire(String chemin) throws WrongArgumentException {
         this.chemin= Paths.get(chemin).toAbsolutePath().normalize();
         rep = new File(chemin);
         if(!Files.exists(this.chemin)){
@@ -103,11 +103,11 @@ public class Repertoire implements EstAnalysable {
             File fichier=fichiers[i];
             if(fichier.isFile()){
                 Fichier f = new Fichier(fichier);
-                System.out.println(s+"└──"+fichier.getName()+f.printStat());
+                System.out.println(s+"└──"+fichier.getName()+f.printStat(false));
             }
             else{
                 Repertoire rep = new Repertoire(fichier);
-                System.out.println(s+"└──"+fichier.getName()+rep.printStat());
+                System.out.println(s+"└──"+fichier.getName()+rep.printStat(false));
                 File[] fichierInterne = fichier.listFiles();
                 printArborescenceDetail(fichierInterne,0,true,s+"│   ");
             }
@@ -116,11 +116,11 @@ public class Repertoire implements EstAnalysable {
             File fichier=fichiers[i];
             if(fichier.isFile()){
                 Fichier f = new Fichier(fichier);
-                System.out.println(s+"├──"+fichier.getName()+f.printStat());
+                System.out.println(s+"├──"+fichier.getName()+f.printStat(false));
             }
             if(fichier.isDirectory()){
                 Repertoire rep = new Repertoire(fichier);
-                System.out.println(s+"├──"+fichier.getName()+rep.printStat());
+                System.out.println(s+"├──"+fichier.getName()+rep.printStat(false));
                 File[] fichierInterne = fichier.listFiles();
                 printArborescenceDetail(fichierInterne,0,true,s+"│   ");
             }
@@ -134,18 +134,19 @@ public class Repertoire implements EstAnalysable {
         printArborescenceDetail(fichiers,0,false,rep.getName());
     }
 
-
-    public String printStat() throws IOException {
+    public String printStat(boolean ecrire) throws IOException {
         BasicFileAttributes attr = Files.readAttributes(chemin, BasicFileAttributes.class);
         String s=" est un repertoire ";
         s+="| "+"Date de creation : "+attr.creationTime().toString().substring(0,10);
         s+=" | "+"Date de modification : "+attr.lastModifiedTime().toString().substring(0,10);
         s+=" | "+"Taille : "+attr.size()+" octets |";
+        if(ecrire){
+            System.out.println(s);
+        }
         return s;
     }
 
-    public String printInfo(){
+    public void printInfo(){
         String s="a";
-        return s;
     }
 }

@@ -1,6 +1,5 @@
 package main;
-import classe.Arguments;
-import com.drew.imaging.ImageProcessingException;
+import core.Arguments;
 import exception.TooMuchArgumentsException;
 import exception.WrongArgumentException;
 import java.io.IOException;
@@ -16,7 +15,7 @@ public class Main {
             Arguments a = new Arguments(args);
         } catch(TooMuchArgumentsException | WrongArgumentException | IOException e){
             System.out.println(e.getMessage());
-        } catch (ImageProcessingException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

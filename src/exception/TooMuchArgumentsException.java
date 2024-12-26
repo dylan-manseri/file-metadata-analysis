@@ -1,5 +1,5 @@
 package exception;
-import classe.Couleur;
+import core.Couleur;
 
 /**
  * Cette exception permet de gérer le surplus d'argument entré par l'utilisateur.

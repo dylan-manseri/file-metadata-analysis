@@ -1,6 +1,6 @@
 package exception;
 
-import classe.Couleur;
+import core.Couleur;
 
 /**
  * Cette exception permet de gérer les erreurs d'arguments de l'utilisateur.

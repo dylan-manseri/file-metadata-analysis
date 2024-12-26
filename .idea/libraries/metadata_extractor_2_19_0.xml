@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="metadata-extractor-2.19.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/.lib/metadata-extractor-2.19.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/.lib/xmpcore-6.1.11.jar!/" />
+      <root url="jar://$PROJECT_DIR$/.lib/gson-2.11.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

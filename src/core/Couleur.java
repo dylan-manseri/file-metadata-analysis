@@ -1,4 +1,4 @@
-package classe;
+package core;
 
 public class Couleur {
     public static String ROUGE = "\u001B[31m";
