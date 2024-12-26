@@ -1,4 +1,4 @@
-package core;
+package core.cli;
 import com.adobe.internal.xmp.XMPException;
 import com.adobe.internal.xmp.XMPMeta;
 import com.drew.metadata.exif.ExifIFD0Directory;

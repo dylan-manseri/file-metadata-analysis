@@ -1,4 +1,4 @@
-package core.save;
+package core.cli.save;
 
 import java.io.File;
 import java.io.IOException;

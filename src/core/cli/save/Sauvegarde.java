@@ -1,7 +1,6 @@
-package core.save;
+package core.cli.save;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import exception.WrongArgumentException;
 
 import java.io.File;

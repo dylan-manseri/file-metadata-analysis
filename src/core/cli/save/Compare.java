@@ -1,4 +1,4 @@
-package core.save;
+package core.cli.save;
 
 import com.google.gson.Gson;
 import exception.WrongArgumentException;

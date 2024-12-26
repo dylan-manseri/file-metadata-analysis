@@ -1,18 +1,17 @@
 package main;
-import core.Arguments;
+import core.cli.Commande;
 import exception.TooMuchArgumentsException;
 import exception.WrongArgumentException;
 import java.io.IOException;
 
-//classe constructeur methode
 
-public class Cli {
-    public static void main(String[] args) throws WrongArgumentException, TooMuchArgumentsException, IOException{
+public class MainCli {
+    public static void main(String[] args){
         try{
-            if(args.length>5){
-                throw new TooMuchArgumentsException();
+            if(args.length==0 || args.length>5){
+                throw new WrongArgumentException("Commande inconnu taper --help pour de l'aide");
             }
-            Arguments a = new Arguments(args);
+            new Commande(args);
         } catch(TooMuchArgumentsException | WrongArgumentException | IOException e){
             System.out.println(e.getMessage());
         } catch (Exception e) {

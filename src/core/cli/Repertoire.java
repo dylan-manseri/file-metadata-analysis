@@ -1,4 +1,4 @@
-package core;
+package core.cli;
 import exception.WrongArgumentException;
 import java.io.File;
 import java.io.IOException;

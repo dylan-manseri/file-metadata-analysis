@@ -1,5 +1,5 @@
 package exception;
-import core.Couleur;
+import core.cli.Couleur;
 
 /**
  * Cette exception permet de gérer le surplus d'argument entré par l'utilisateur.
@@ -10,6 +10,6 @@ import core.Couleur;
 
 public class TooMuchArgumentsException extends Exception{
     public TooMuchArgumentsException(){
-        super(Couleur.ROUGE +"Erreur : Vous ne pouvez pas mettre plus de 2 options." + Couleur.RESET);
+        super(Couleur.ROUGE +"Erreur : Vous ne pouvez pas mettre autant d'options." + Couleur.RESET);
     }
 }

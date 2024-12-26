@@ -1,6 +1,6 @@
-package core;
-import core.save.Compare;
-import core.save.Sauvegarde;
+package core.cli;
+import core.cli.save.Compare;
+import core.cli.save.Sauvegarde;
 import exception.WrongArgumentException;
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.io.IOException;
  * @version 0.1
  */
 
-public class Arguments {
+public class Commande {
 
     /**
      *
@@ -21,10 +21,7 @@ public class Arguments {
      * @throws IOException
      */
 
-    public Arguments(String[] args) throws Exception {
-        if(args.length==0){
-            throw new WrongArgumentException("Commande inconnu taper --help pour de l'aide");
-        }
+    public Commande(String[] args) throws Exception {
         switch (args[0]) {
             case "--help", "-h" -> help();
             case "-d", "--directory" -> {

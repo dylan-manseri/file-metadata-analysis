@@ -1,4 +1,4 @@
-package core.save;
+package core.cli.save;
 
 public class FileInfo {
     private String name;

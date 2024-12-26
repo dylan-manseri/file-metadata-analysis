@@ -1,4 +1,4 @@
-package core;
+package core.cli;
 import com.drew.imaging.ImageProcessingException;
 import exception.WrongArgumentException;
 import javax.imageio.ImageIO;
