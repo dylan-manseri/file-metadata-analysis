@@ -12,6 +12,7 @@ import java.io.IOException;
 
 public class Analyse extends JFrame {
     JPanel base;
+    JPanel stat;
     String type;
 
     public Analyse(JPanel base, String type) {
@@ -31,7 +32,7 @@ public class Analyse extends JFrame {
     }
 
     public void createStatPanel(){
-        JPanel stat = new JPanel(new BorderLayout());
+        stat = new JPanel(new BorderLayout());
         stat.setBorder(new EmptyBorder(10,10,10,10));
 
         JLabel chemin = new JLabel("Chemin :");
@@ -74,6 +75,12 @@ public class Analyse extends JFrame {
                 reponse.setText("Erreur lors de l'extraction des statistiques");
             }
         });
+    }
+
+    public void reset(){
+        stat.removeAll();
+        base.revalidate();
+        base.repaint();
     }
 
     public void doStatAnalyze(JTextField chemin, JTextArea reponse) throws WrongArgumentException, IOException {
