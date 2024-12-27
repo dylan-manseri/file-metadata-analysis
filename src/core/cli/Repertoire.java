@@ -163,9 +163,29 @@ public class Repertoire{
         return s;
     }
 
-    String printStatGui(){
+    public String printStatGui() throws IOException {
+        BasicFileAttributes attr = Files.readAttributes(chemin, BasicFileAttributes.class);
+        File[] fichiers = rep.listFiles();
         String s;
-        return s="";
+        HashMap<String, Integer> h = new HashMap<>();
+        h.put(".png",0);
+        h.put(".jpg",0);
+        h.put(".webp",0);
+        int png;
+        int jpg;
+        int webp;
+        if(fichiers!=null){
+            h=nbrFichier(fichiers,0,h);
+            png=h.get(".png"); jpg=h.get(".jpg"); webp=h.get(".webp");
+            s=rep.getName()+" est un repertoire contenant \n"+png+" fichiers.png, \n"+jpg+" fichiers.jpg,\n"+webp+" fichiers.webp \n";
+        }
+        else{
+            s=" est un repertoire vide\n";
+        }
+        s+="Date de creation : "+attr.creationTime().toString().substring(0,10)+"\n";
+        s+="Date de modification : "+attr.lastModifiedTime().toString().substring(0,10)+"\n";
+        s+="Taille : "+attr.size()+" octets"+"\n";
+        return s;
     }
 
     public HashMap<String, Integer> nbrFichier(File[] fichiers, int i, HashMap<String, Integer> nbr){

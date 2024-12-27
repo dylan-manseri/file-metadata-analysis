@@ -50,7 +50,9 @@ public class Analyse extends JFrame {
         boxY.setLayout(new BoxLayout(boxY,BoxLayout.Y_AXIS));
         boxY.add(boxX); boxY.add(entree);
 
-        JLabel reponse = new JLabel();
+        JTextArea reponse = new JTextArea(); //CHANGEMENT
+        reponse.setEditable(false); //CHANGEMENT
+        reponse.setWrapStyleWord(true); //CHANGEMENT
         Border border = BorderFactory.createLineBorder(Color.BLACK, 2);
         reponse.setBorder(border);
         reponse.setPreferredSize(new Dimension(0,325));
@@ -74,17 +76,17 @@ public class Analyse extends JFrame {
         });
     }
 
-    public void doStatAnalyze(JTextField chemin, JLabel reponse) throws WrongArgumentException, IOException {
+    public void doStatAnalyze(JTextField chemin, JTextArea reponse) throws WrongArgumentException, IOException {
         String s=chemin.getText();
         File f = new File(s);
         String stat;
         if(f.isFile()){
             Fichier fic = new Fichier(s);
-            stat=fic.printStat(false);
+            stat=fic.printStatGui(); //CHANGEMENT
         }
         else{
             Repertoire rep = new Repertoire(s);
-            stat= rep.printStat(false);
+            stat= rep.printStatGui(); //CHANGEMENT
         }
         reponse.setText(stat);
         base.revalidate();
