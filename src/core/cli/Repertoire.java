@@ -163,6 +163,11 @@ public class Repertoire{
         return s;
     }
 
+    String printStatGui(){
+        String s;
+        return s="";
+    }
+
     public HashMap<String, Integer> nbrFichier(File[] fichiers, int i, HashMap<String, Integer> nbr){
         if(i==fichiers.length){
             return nbr;

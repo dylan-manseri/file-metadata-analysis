@@ -92,6 +92,34 @@ public class Fichier {
         return null;
     }
 
+    public String printStatGui(){
+        try{
+            String mere = chemin.getParent().getFileName().toString();
+            String nom = chemin.getFileName().toString();
+            String type = nom.substring(nom.length()-3);
+            String mess=" type : ";
+
+            if(type.equals("txt") || type.equals("csv")){
+                mess+="un fichier texte\n";
+            }
+            else if(type.equals("jpg") || type.equals("png") || type.equals("webp")){
+                mess+="un fichier image\n";
+            }
+            String dateCreation = Files.getAttribute(chemin,"creationTime").toString().substring(0,10);
+            String dateModification = Files.getLastModifiedTime(chemin).toString().substring(0,10);
+            long taille = Files.size(chemin);
+
+            String s="Date de creation : "+dateCreation+"\n";
+            s+="Date de la derniere modification : "+dateModification+"\n";
+            s+="Taille : "+taille+" octets";
+            mess+=" dossier parent : "+mere+"\n"+s;
+            return mess;
+        } catch(IOException e){
+            System.out.println("erreur");
+        }
+        return null;
+    }
+
     public void printInfo() throws Exception {
         String nom = chemin.getFileName().toString();
         String type = nom.substring(nom.length() - 4);

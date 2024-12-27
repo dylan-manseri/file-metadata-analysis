@@ -1,7 +1,6 @@
 package core.gui;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,7 +28,7 @@ public class Fenetre extends JFrame {
         contentPane.add(createToolBar(), BorderLayout.NORTH);
         contentPane.add(arbo,BorderLayout.CENTER);
 
-        actionButton();
+        toolBarButton();
     }
 
     public JToolBar createToolBar(){
@@ -43,47 +42,15 @@ public class Fenetre extends JFrame {
         return toolBar;
     }
 
-    public void createStatPanel(){
-        JPanel stat = new JPanel(new BorderLayout());
 
-        JLabel chemin = new JLabel("Chemin :");
-        JTextArea cheminTxt = new JTextArea();
-        cheminTxt.setPreferredSize(new Dimension(5,25));
-        JPanel ask = new JPanel(new FlowLayout());
-        ask.add(chemin); ask.add(cheminTxt);
-
-        JButton entree = new JButton("ENTREE");
-        entree.setPreferredSize(new Dimension(800,50));
-        JPanel boxX = new JPanel();
-        boxX.setLayout(new BoxLayout(boxX,BoxLayout.X_AXIS));
-        boxX.add(chemin); boxX.add(cheminTxt);
-        boxX.setPreferredSize(new Dimension(100,100));
-        JPanel boxY = new JPanel();
-        boxY.setLayout(new BoxLayout(boxY,BoxLayout.Y_AXIS));
-        boxY.add(boxX); boxY.add(entree);
-
-        JLabel reponse = new JLabel("reponse ici");
-        Border border = BorderFactory.createLineBorder(Color.BLACK, 2);
-        reponse.setBorder(border);
-        reponse.setPreferredSize(new Dimension(0,350));
-
-        JLabel stati = new JLabel("Statistique -> indiquer un chemin");
-        stati.setPreferredSize(new Dimension(0,130));
-
-        stat.add(stati, BorderLayout.NORTH);
-        stat.add(boxY,BorderLayout.CENTER);
-        stat.add(reponse, BorderLayout.SOUTH);
-        stat.setPreferredSize(new Dimension(250,0));
-        contentPane.add(stat, BorderLayout.WEST);
-        contentPane.revalidate();
-        contentPane.repaint();
-    }
 
     public Path actualPath(){
         return Paths.get(".").normalize().toAbsolutePath();
     }
 
-    public void actionButton(){
-        statButton.addActionListener( (event) -> createStatPanel());
+    public void toolBarButton(){
+        statButton.addActionListener( (event) -> new Analyse(contentPane, "stat"));
     }
+
+
 }
