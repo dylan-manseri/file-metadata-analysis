@@ -22,18 +22,6 @@ public class Repertoire{
     private final Path chemin;
     private final File rep;
 
-    public Repertoire(Path chemin) throws WrongArgumentException {
-        if(!Files.exists(chemin)){
-            throw new WrongArgumentException("Chemin non existants, taper -h ou --help pour de l'aide");
-        }
-        this.chemin=chemin;
-        rep = new File(chemin.toString());
-        if(rep.isFile()){
-            throw new WrongArgumentException(rep.getName()+" est un fichier, taper -f pour les manipuler " +
-                    "taper -h ou --help pour de l'aide");
-        }
-    }
-
     public Repertoire(File rep) throws NoSuchFileException, WrongArgumentException {
         this.rep=rep;
         this.chemin=rep.toPath();
@@ -207,17 +195,17 @@ public class Repertoire{
     public HashMap<String, Integer> verifFile(HashMap<String, Integer> h, File f){
         String name = f.getName();
         if(name.endsWith(".png")){
-            int v = (int) h.get(".png");
+            int v = h.get(".png");
             v++;
             h.put(".png",v);
         }
         if(name.endsWith(".jpg")){
-            int v = (int) h.get(".jpg");
+            int v = h.get(".jpg");
             v++;
             h.put(".jpg",v);
         }
         if(name.endsWith(".webp")){
-            int v = (int) h.get(".webp");
+            int v = h.get(".webp");
             v++;
             h.put(".webp",v);
         }

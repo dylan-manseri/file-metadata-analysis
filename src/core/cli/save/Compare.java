@@ -2,22 +2,25 @@ package core.cli.save;
 
 import com.google.gson.Gson;
 import exception.WrongArgumentException;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Compare {
-    File dos;
-    String captureName;
+    private File doss;
+    private final String captureName;
+    private String reponseConsole;
 
-    public Compare(File dos, String captureName) throws WrongArgumentException, IOException {
-        this.dos = dos;
+    public Compare(File doss, String captureName) throws WrongArgumentException, IOException {
+        this.doss = doss;
         this.captureName = captureName;
-        if (!dos.isDirectory()) {
+        if (!doss.isDirectory()) {
             throw new WrongArgumentException("Ce chemin n'est pas un repertoire, taper --help pour de l'aide");
         }
-        String json = createJson(dos);
+        String json = createJson(doss);
         String capture = readJsonCapture(captureName);
         if(json.equals(capture)){
             System.out.println("Le fichier n'a pas subit de modifications");
@@ -27,13 +30,28 @@ public class Compare {
         }
     }
 
+    public Compare(File doss, JTextField captureName) throws WrongArgumentException, IOException {
+        this.doss = doss;
+        this.captureName = captureName.getText();
+        if (!doss.isDirectory()) {
+            throw new WrongArgumentException("Ce chemin n'est pas un repertoire, taper --help pour de l'aide");
+        }
+        String json = createJson(doss);
+        String capture = readJsonCapture(this.captureName);
+        if(json.equals(capture)){
+            this.reponseConsole = "Le fichier n'a pas subit de modifications";
+        }
+        else{
+            this.reponseConsole = "Le fichier a subit des modifications";
+        }
+    }
+
     public String createJson(File dos) throws IOException {
         String name = dos.getName();
         File[] fichiersInterne = dos.listFiles();
         DirectoryInfo rep = new DirectoryInfo(name, fichiersInterne);
         Gson gson = new Gson();
-        String json = gson.toJson(rep);
-        return json;
+        return gson.toJson(rep);
     }
 
     public String readJsonCapture(String captureName) throws WrongArgumentException, IOException {
@@ -73,4 +91,15 @@ public class Compare {
         }*/
     }
 
+    public File getDoss() {
+        return doss;
+    }
+
+    public void setDoss(File doss) {
+        this.doss = doss;
+    }
+
+    public String getReponseConsole(){
+        return this.reponseConsole;
+    }
 }

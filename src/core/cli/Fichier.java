@@ -1,6 +1,7 @@
 package core.cli;
 import com.adobe.internal.xmp.XMPException;
 import com.adobe.internal.xmp.XMPMeta;
+import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
@@ -24,6 +25,7 @@ import com.drew.metadata.Metadata;
 public class Fichier {
     private final Path chemin;
     private final File f;
+    private String consoleMessage;
 
     public Fichier(Path chemin) throws NoSuchFileException, WrongArgumentException {
         if(!Files.exists(chemin)){
@@ -97,13 +99,16 @@ public class Fichier {
             String mere = chemin.getParent().getFileName().toString();
             String nom = chemin.getFileName().toString();
             String type = nom.substring(nom.length()-3);
-            String mess=" type : ";
+            String mess="est ";
 
             if(type.equals("txt") || type.equals("csv")){
                 mess+="un fichier texte\n";
             }
             else if(type.equals("jpg") || type.equals("png") || type.equals("webp")){
                 mess+="un fichier image\n";
+            }
+            else{
+                mess="n'est pas une image\n";
             }
             String dateCreation = Files.getAttribute(chemin,"creationTime").toString().substring(0,10);
             String dateModification = Files.getLastModifiedTime(chemin).toString().substring(0,10);
@@ -112,8 +117,8 @@ public class Fichier {
             String s="Date de creation : "+dateCreation+"\n";
             s+="Date de la derniere modification : "+dateModification+"\n";
             s+="Taille : "+taille+" octets";
-            mess+=" dossier parent : "+mere+"\n"+s;
-            return mess;
+            mess+="Dossier parent : "+mere+"\n"+s;
+            return nom+" "+mess;
         } catch(IOException e){
             System.out.println("erreur");
         }
@@ -129,28 +134,26 @@ public class Fichier {
         }
         Metadata metadata = ImageMetadataReader.readMetadata(f);
 
-        printExif(metadata);
-        printOtherXMP(metadata);
-
-        String a ="";
+        consoleMessage = printExif(metadata);
+        consoleMessage += printOtherXMP(metadata);
     }
 
-    void printExif(Metadata m){
+    public String printExif(Metadata m){
         ExifIFD0Directory exifIF = m.getFirstDirectoryOfType(ExifIFD0Directory.class);
         ExifSubIFDDirectory exifSUB = m.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
         GpsDirectory gps = m.getFirstDirectoryOfType(GpsDirectory.class);
-        String s="| Format : Exif |";
+        String s="| Format : Exif |\n";
         String err="";
         if(exifIF!=null){
             String modelCam = exifIF.getString(ExifIFD0Directory.TAG_MODEL);
             String marqueCam = exifIF.getString(ExifIFD0Directory.TAG_MAKE);
             String resolutionX = exifIF.getString(ExifIFD0Directory.TAG_X_RESOLUTION);
             String resolutionY = exifIF.getString(ExifIFD0Directory.TAG_Y_RESOLUTION);
-            s +=" Marque camera : "+marqueCam+" |"+ " Model : " + modelCam+" |";
-            s+="Resolution X : "+resolutionX+"ppp, Y : "+resolutionY+"ppp |";
+            s +="Marque camera : "+marqueCam+"\n"+ "Modele : " + modelCam+"\n";
+            s+="Resolution X : "+resolutionX+"ppp, Y : "+resolutionY+"ppp\n";
         }
         else{
-            err = " Metadonne de la camera et de la resolution introuvable, ";
+            err = "Metadonne de la camera et de la resolution introuvable, \n";
         }
         if(exifSUB!=null){
             String longeurFocale = exifSUB.getString(ExifSubIFDDirectory.TAG_FOCAL_LENGTH);
@@ -158,42 +161,42 @@ public class Fichier {
             String ouvertureObjectif = exifSUB.getString(ExifSubIFDDirectory.TAG_FNUMBER);
             String sensibiliteISO = exifSUB.getString(ExifSubIFDDirectory.TAG_ISO_EQUIVALENT);
             String dateHeure = exifSUB.getString(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
-            s+= "\n| Date et heure : "+dateHeure+" |";
-            s+= " Duree d'exposition : "+dureeExposition+" |"+" Ouverture objectif : "
-                    +ouvertureObjectif+" |"+" Sensibilite ISO : "+sensibiliteISO+" |"+" Longueur focale : "+longeurFocale+" |";
+            s+= "Date et heure : "+dateHeure+" \n";
+            s+= "Duree d'exposition : "+dureeExposition+"\n"+"Ouverture objectif : "
+                    +ouvertureObjectif+"\n"+"Sensibilite ISO : "+sensibiliteISO+"\n"+"Longueur focale : "+longeurFocale+"\n";
         }
         else{
-            err+="parametre de prise de vue et d'heure introuvable, ";
+            err+="parametre de prise de vue et d'heure introuvable, \n";
         }
         if(gps!=null){
             String localisation = gps.getGeoLocation().toString();
-            s+="\n| Coordonnee GPS :"+" "+localisation+" |\n";
+            s+="Coordonnee GPS :"+" "+localisation+"\n";
         }
         else{
-            err+="GPS introuvable";
+            err+="GPS introuvable\n";
         }
-        System.out.println(s+err);
+        return s+err;
     }
 
-    void printOtherXMP(Metadata m) throws XMPException {
+    public String printOtherXMP(Metadata m) throws XMPException {
         XmpDirectory xmp = m.getFirstDirectoryOfType(XmpDirectory.class);
         if(xmp!=null){
             XMPMeta xmpMeta = xmp.getXMPMeta();
-            String s = "| Format : Dublin Core |";
-            s+=" Titre : "+getXMPType(xmpMeta,"http://purl.org/dc/elements/1.1/","title")+" |";
-            s+=" Createur : "+getXMPType(xmpMeta,"http://purl.org/dc/elements/1.1/","creator")+" |";
-            s+=" Description : "+getXMPType(xmpMeta,"http://purl.org/dc/elements/1.1/","description")+" |";
+            String s = "\n| Format : Dublin Core |\n";
+            s+="Titre : "+getXMPType(xmpMeta,"http://purl.org/dc/elements/1.1/","title")+"\n";
+            s+="Createur : "+getXMPType(xmpMeta,"http://purl.org/dc/elements/1.1/","creator")+"\n";
+            s+="Description : "+getXMPType(xmpMeta,"http://purl.org/dc/elements/1.1/","description")+"\n";
             s+="\n| Format : IPTC Core |";
-            s+=" Contact du createur : "+getXMPType(xmpMeta,"http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/","CreatorContactInfo")+" |";
-            s+=" Lieu : "+getXMPType(xmpMeta,"http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/","Location")+" |";
-            System.out.println(s);
+            s+="\nContact du createur : "+getXMPType(xmpMeta,"http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/","CreatorContactInfo")+"\n";
+            s+="Lieu : "+getXMPType(xmpMeta,"http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/","Location")+"\n";
+            return s;
         }
         else{
-            System.out.println("Autres formats de metadonnee XMP introuvable");
+            return "Autres formats de metadonnee XMP introuvable";
         }
     }
 
-    String getXMPType(XMPMeta xmp, String namescape, String tag) throws NullPointerException {
+    private String getXMPType(XMPMeta xmp, String namescape, String tag) throws NullPointerException {
         String donnee="Metadonnee introuvable";
         try{
             donnee = String.valueOf(xmp.getLocalizedText(namescape,tag,null,"x-default"));
@@ -205,11 +208,11 @@ public class Fichier {
         try{
             int i = xmp.countArrayItems(namescape,tag);
             if(i>0){
-                String s= "";
+                StringBuilder s= new StringBuilder();
                 for(int a=0; a<i; a++){
-                    s+=xmp.getArrayItem(namescape,tag,i).getValue();
+                    s.append(xmp.getArrayItem(namescape, tag, i).getValue());
                 }
-                return s;
+                return s.toString();
             }
         } catch (XMPException ignored) {
         }
@@ -219,5 +222,9 @@ public class Fichier {
         } catch (XMPException ignored) {
         }
         return donnee;
+    }
+
+    public String getConsoleMessage() {
+        return consoleMessage;
     }
 }

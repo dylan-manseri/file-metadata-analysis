@@ -14,6 +14,7 @@ import java.io.IOException;
  */
 
 public class Commande {
+    String consoleMessage;
 
     /**
      *
@@ -23,7 +24,11 @@ public class Commande {
 
     public Commande(String[] args) throws Exception {
         switch (args[0]) {
-            case "--help", "-h" -> help();
+            case "help" -> help();
+            case "--help", "-h" -> {
+                help();
+                System.out.println(consoleMessage);
+            }
             case "-d", "--directory" -> {
                 if(args.length==1){throw new WrongArgumentException("Commande inconnu taper --help pour de l'aide");}
                 Repertoire rep = new Repertoire(args[1]);
@@ -60,6 +65,7 @@ public class Commande {
                 }
                 else if ((args.length == 3) && args[2].equals("--info")) {
                     fic.printInfo();
+                    System.out.println(fic.getConsoleMessage());
                 }
                 else if ((args.length == 4) && ((args[2].equals("--info") && args[3].equals("--stat")) ||
                         (args[3].equals("--info") && args[2].equals("--stat")))) {
@@ -74,7 +80,8 @@ public class Commande {
             }
             case "--search", "-s" -> {
                 if(args.length==3){
-                    new Recherche(args[1], args[2]);
+                    Recherche r = new Recherche(args[1], args[2]);
+                    System.out.println(r.getConsoleMessage());
                 }
                 else if(args.length==5){
                     new Recherche(args[1], args[2], args[3], args[4]);
@@ -89,11 +96,10 @@ public class Commande {
         }
     }
 
-    public void help(){
-        String s="Ci-desosus la liste des commandes disponible.\n";
-        System.out.println(s);
-        System.out.println("On precise d'abord sur quel support se fera l'analyse avec :");
-        String s1="------------------------------------------------\n";
+    private void help(){
+        String s1 ="Ci-desosus la liste des commandes disponible.\n";
+        s1+="On precise d'abord sur quel support se fera l'analyse avec :\n";
+        s1+="------------------------------------------------\n";
         s1+= "-d ou --directory: Utilise pour indiquer un repertoire\n";
         s1+="-f ou --file : Utilise pour indiquer un fichier\n";
         s1+="------------------------------------------------\n";
@@ -110,6 +116,10 @@ public class Commande {
         s1+="--search --year YEAR : Utilise pour rechercher un fichier selon son annee de creation dans le repertoire courant\n";
         s1+="--search --date YEAR-MONTH-DAY : Utilise pour rechercher un fichier selon sa date de creation dans le repertoire courant\n";
         s1+="--search --dim LARGEURxHAUTEUR : Utilise pour rechercher un fichier selon sa dimension dans le repertoire courant\n";
-        System.out.println(s1);
+        consoleMessage=s1;
+    }
+
+    public String getConsoleMessage() {
+        return consoleMessage;
     }
 }
