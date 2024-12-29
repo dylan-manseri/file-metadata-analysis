@@ -27,23 +27,16 @@ public class Fichier {
     private final File f;
     private String consoleMessage;
 
-    public Fichier(Path chemin) throws NoSuchFileException, WrongArgumentException {
-        if(!Files.exists(chemin)){
-            throw new NoSuchFileException("Chemin non existants, taper -h ou --help pour de l'aide");
-        }
-        this.chemin=chemin;
-        f = new File(chemin.toString());
-        if(f.isDirectory()){
-            throw new WrongArgumentException(f.getName()+" est un repertoire, taper -d pour les manipuler \n" +
-                    "taper -h ou --help pour de l'aide");
-        }
-    }
-
-    public Fichier(File f) throws NoSuchFileException, WrongArgumentException {
+    /**
+     * Crée un instance de la classe Fichier et verifie si le fichier existe bien.
+     * @param f le fichier sous forme d'objet de la classe File
+     * @throws WrongArgumentException si le fichier entré est un repertoire et non un fichier, ou qu'il n'existe pas
+     */
+    public Fichier(File f) throws WrongArgumentException {
         this.f=f;
         this.chemin=f.toPath();
         if(!Files.exists(chemin)){
-            throw new NoSuchFileException("Chemin non existants, taper -h ou --help pour de l'aide");
+            throw new WrongArgumentException("Chemin non existants, taper -h ou --help pour de l'aide");
         }
         if(f.isDirectory()){
             throw new WrongArgumentException(f.getName()+" est un repertoire, taper -d pour les manipuler \n" +
@@ -51,6 +44,11 @@ public class Fichier {
         }
     }
 
+    /**
+     * Crée un instance de la classe Fichier et verifie si le fichier existe bien
+     * @param chemin le chemin du fichier
+     * @throws WrongArgumentException si le fichier et un repertoire ou n'existe pas
+     */
     public Fichier(String chemin) throws WrongArgumentException {
         this.chemin= Paths.get(chemin).toAbsolutePath().normalize();
         f = new File(chemin);
@@ -63,6 +61,11 @@ public class Fichier {
         }
     }
 
+    /**
+     * Ecrit les statistiques basiques du fichier instancié (date de création, derniere modification, taille).
+     * @param ecrire Indique si les statistiques doivent être écrite ou non.
+     * @return le message à écrire ou null si il ne faut rien écrire
+     */
     public String printStat(boolean ecrire){
         try{
             String mere = chemin.getParent().getFileName().toString();
@@ -94,6 +97,11 @@ public class Fichier {
         return null;
     }
 
+    /**
+     * Ecrit les statistiques basiques du fichier instancié (date de création, derniere modification, taille).
+     * Cette methode sert au mode graphique
+     * @return le message à écrire
+     */
     public String printStatGui(){
         try{
             String mere = chemin.getParent().getFileName().toString();
@@ -125,6 +133,11 @@ public class Fichier {
         return null;
     }
 
+    /**
+     * Centralise l'extraction des métadonnnés d'un fichier et stocke le message associé dans consoleMessage.
+     * Cette methode appele deux autre methode dédié à un type de metadonnée.
+     * @throws Exception si le fichier n'est pas une image
+     */
     public void printInfo() throws Exception {
         String nom = chemin.getFileName().toString();
         String type = nom.substring(nom.length() - 4);
@@ -138,6 +151,11 @@ public class Fichier {
         consoleMessage += printOtherXMP(metadata);
     }
 
+    /**
+     * Extrait les metadonnées de format EXIF
+     * @param m les metadonnés (objet de classe Metadata) associé au fichier.
+     * @return le message associé
+     */
     public String printExif(Metadata m){
         ExifIFD0Directory exifIF = m.getFirstDirectoryOfType(ExifIFD0Directory.class);
         ExifSubIFDDirectory exifSUB = m.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
@@ -178,7 +196,12 @@ public class Fichier {
         return s+err;
     }
 
-    public String printOtherXMP(Metadata m) throws XMPException {
+    /**
+     * Extrait les metadonnées de format EXIF
+     * @param m les metadonnés (objet de classe Metadata) associé au fichier.
+     * @return le message associé
+     */
+    public String printOtherXMP(Metadata m) {
         XmpDirectory xmp = m.getFirstDirectoryOfType(XmpDirectory.class);
         if(xmp!=null){
             XMPMeta xmpMeta = xmp.getXMPMeta();
@@ -196,34 +219,46 @@ public class Fichier {
         }
     }
 
-    private String getXMPType(XMPMeta xmp, String namescape, String tag) throws NullPointerException {
+    /**
+     * Cette classe force 3 type d'analyse visant déterminé de quelle façon une metadonnée est écrite
+     * @param xmp La metadonnée XMP a analyser
+     * @param namespace le nom de la namespace de la metadonnée
+     * @param tag le nom de la metadonnée (date, creation...)
+     * @return le resultat de l'analyse (soit les metadonnees, soit un message d'erreur)
+     * @throws NullPointerException si l'extraction a echoué mais ne fait rien pour pouvoir tester
+     * les autres types, en cas d'erreur dans toutes les analyse "Metadonnee introuvable" est renvoyé
+     */
+    private String getXMPType(XMPMeta xmp, String namespace, String tag) throws NullPointerException {
         String donnee="Metadonnee introuvable";
         try{
-            donnee = String.valueOf(xmp.getLocalizedText(namescape,tag,null,"x-default"));
+            donnee = String.valueOf(xmp.getLocalizedText(namespace,tag,null,"x-default"));
             if(donnee!=null){
                 return donnee;
             }
         } catch (XMPException ignored) {
         }
         try{
-            int i = xmp.countArrayItems(namescape,tag);
+            int i = xmp.countArrayItems(namespace,tag);
             if(i>0){
                 StringBuilder s= new StringBuilder();
                 for(int a=0; a<i; a++){
-                    s.append(xmp.getArrayItem(namescape, tag, i).getValue());
+                    s.append(xmp.getArrayItem(namespace, tag, i).getValue());
                 }
                 return s.toString();
             }
         } catch (XMPException ignored) {
         }
         try{
-            donnee=xmp.getPropertyString(namescape,tag);
+            donnee=xmp.getPropertyString(namespace,tag);
             return donnee;
         } catch (XMPException ignored) {
         }
         return donnee;
     }
 
+    /**
+     * @return le message de la console à propos de l'analyse
+     */
     public String getConsoleMessage() {
         return consoleMessage;
     }

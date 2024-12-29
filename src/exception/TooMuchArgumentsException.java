@@ -9,6 +9,10 @@ import core.cli.Couleur;
  */
 
 public class TooMuchArgumentsException extends Exception{
+
+    /**
+     * Instancie TooMuchArgumentsExcpetion et affiche un message d'erreur en rouge
+     */
     public TooMuchArgumentsException(){
         super(Couleur.ROUGE +"Erreur : Vous ne pouvez pas mettre autant d'options." + Couleur.RESET);
     }

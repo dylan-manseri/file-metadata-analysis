@@ -19,9 +19,21 @@ import java.util.HashMap;
  */
 
 public class Repertoire{
+    /**
+     * chemin du repertoire
+     */
     private final Path chemin;
+    /**
+     * objet de la classe File correspondant au repertoire
+     */
     private final File rep;
 
+    /**
+     * Crée une instance de Repertoire et vérifie le dossier associé existe bien.
+     * @param rep instance de File, c'est le fichier liée au repertoire
+     * @throws NoSuchFileException si repertoire n'existe pas
+     * @throws WrongArgumentException si le fichiers entrée est un fichier et non un repertoire
+     */
     public Repertoire(File rep) throws NoSuchFileException, WrongArgumentException {
         this.rep=rep;
         this.chemin=rep.toPath();
@@ -34,6 +46,12 @@ public class Repertoire{
         }
     }
 
+    /**
+     * Crée une instance de Repertoire et vérifie le dossier associé existe bien.
+     * Ce 2e constrcteur sert aux cas où nous n'avons que le chemin.
+     * @param chemin chemin du repertoire
+     * @throws WrongArgumentException si le repertoire est un fichier ou s'il n'existe pas
+     */
     public Repertoire(String chemin) throws WrongArgumentException {
         this.chemin= Paths.get(chemin).toAbsolutePath().normalize();
         rep = new File(chemin);
@@ -46,6 +64,13 @@ public class Repertoire{
         }
     }
 
+    /**
+     * Parcours recursivement l'arborescence et l'affiche de manière simplifié
+     * @param fichiers tableau des fichiers/dossiers contenus dans le repertoire
+     * @param i itération de la récursivité
+     * @param estDansUnDossier booléen utile à l'affiche indiquant si l'on se trouve au tout debut du programme ou non
+     * @param s String à écrire
+     */
     public void printArborescence(File[] fichiers, int i, boolean estDansUnDossier, String s){
         if(i==0 && !estDansUnDossier){
             System.out.println("\nArborescence simplifie de "+s+"\n");
@@ -74,11 +99,24 @@ public class Repertoire{
         printArborescence(fichiers,i+1,false,s);
     }
 
+    /**
+     * Surchage de la methode initial qui sert à préparer les variables néccessaires au bon fonctionnement de la methode initial
+     * Cette methode est celle qui sera appelé pour utilisé la methode inital, car plus simple.
+     */
     public void printArborescence() {
         File[] fichiers = rep.listFiles();
         printArborescence(fichiers,0,false,rep.getName());
     }
 
+    /**
+     * Parcours recursivement l'arborescence et l'affiche avec les statistiques basiques
+     * @param fichiers tableau des fichiers/dossiers contenus dans le repertoire
+     * @param i itération de la récursivité
+     * @param estDansUnDossier booléen utile à l'affiche indiquant si l'on se trouve au tout debut du programme ou non
+     * @param s String à écrire
+     * @throws IOException si l'extraction des statistiques a échoué
+     * @throws WrongArgumentException si l'extraction des statistiques a échoué
+     */
     public void printArborescenceDetail(File[] fichiers, int i, boolean estDansUnDossier, String s) throws IOException, WrongArgumentException {
         if(i==0 && !estDansUnDossier){
             System.out.println("\nArborescence detaillee de "+s+"\n");
@@ -118,11 +156,21 @@ public class Repertoire{
         printArborescenceDetail(fichiers,i+1,false,s);
     }
 
+    /**
+     * Surchage de la methode initial qui sert à préparer les variables néccessaires au bon fonctionnement de la methode initial
+     * Cette methode est celle qui sera appelé pour utilisé la methode inital, car plus simple.
+     */
     public void printArborescenceDetail() throws IOException, WrongArgumentException {
         File[] fichiers = rep.listFiles();
         printArborescenceDetail(fichiers,0,false,rep.getName());
     }
 
+    /**
+     * Stocke les statistiques d'un dossier dans une variable et l'écrit ou la renvoie en fonction des parameètre
+     * @param ecrire booléen indiquant si il faut écrire les statistiques ou non
+     * @return une String stockant les statistiques
+     * @throws IOException si l'extraction des statistiques a échouée
+     */
     public String printStat(boolean ecrire) throws IOException {
         BasicFileAttributes attr = Files.readAttributes(chemin, BasicFileAttributes.class);
         File[] fichiers = rep.listFiles();
@@ -150,7 +198,12 @@ public class Repertoire{
         }
         return s;
     }
-
+    /**
+     * Stocke les statistiques d'un dossier dans une variable et l'écrit ou la renvoie en fonction des paramètre.
+     * Cette methode ne sert qu'au mode graphique
+     * @return une String stockant les statistiques
+     * @throws IOException si l'extraction des statistiques a échouée
+     */
     public String printStatGui() throws IOException {
         BasicFileAttributes attr = Files.readAttributes(chemin, BasicFileAttributes.class);
         File[] fichiers = rep.listFiles();
@@ -176,6 +229,13 @@ public class Repertoire{
         return s;
     }
 
+    /**
+     * Parcours recursivement l'arborescence et compte le nombre de fichiers images selon leur extention (jpg, png...)
+     * @param fichiers fichiers/dossier à parcourir
+     * @param i itération de la récursivité
+     * @param nbr HashMap du nombre de fichiers images selon le format
+     * @return la HashMap(format, nombre) resultant du parcours
+     */
     public HashMap<String, Integer> nbrFichier(File[] fichiers, int i, HashMap<String, Integer> nbr){
         if(i==fichiers.length){
             return nbr;
@@ -192,6 +252,12 @@ public class Repertoire{
         return nbrFichier(fichiers,i+1,nbr);
     }
 
+    /**
+     * Verifie par le nom le format d'un fichier et modifie la HashMap en conséquence
+     * @param h la HashMap du nombre de fichiers images selon le format
+     * @param f instance File du fichier
+     * @return la HashMap(format, nombre) resultant de la verification
+     */
     public HashMap<String, Integer> verifFile(HashMap<String, Integer> h, File f){
         String name = f.getName();
         if(name.endsWith(".png")){
@@ -212,6 +278,10 @@ public class Repertoire{
         return h;
     }
 
+    /**
+     * getter retournant le nom du repertoire
+     * @return le nom du repertoire
+     */
     public String getName(){
         return chemin.getFileName().toString();
     }

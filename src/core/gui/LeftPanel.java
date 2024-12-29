@@ -15,15 +15,34 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Cette classe gère l'affichage du panneau gauche concernant des analyses
+ *
+ * @author Dylan Manseri
+ * @version 1.0
+ */
 public class LeftPanel extends JPanel {
+    /**
+     * contenaire parent
+     */
     JPanel base;
+    /**
+     * type d'information à affiché sur ce panneau
+     */
     String type;
+    /**
+     * nom du fichier cliqué de l'arborescence
+     */
     String nameFile;
 
+    /**
+     * Instancie un LeftPanel et appelle la methode associé à l'analyse à effectuer et à afficher sur ce panneau
+     * @param base contenaire parent
+     * @param type type d'analyse
+     */
     public LeftPanel(JPanel base, String type) {
         this.base=base;
         this.type=type;
-        //this.setLayout(new BorderLayout());
         switch(type){
             case "stat" -> createStatPanel();
             case "info" -> createInfoPanel();
@@ -34,6 +53,14 @@ public class LeftPanel extends JPanel {
         }
     }
 
+    /**
+     * Instancie un LeftPanel et appelle la methode associé à l'analyse à effectuer et à afficher sur ce panneau
+     * Ce deuxième constructeur sert au cas où l'utilisateur clique sur l'arborescence.
+     * @param base contenaire parent
+     * @param type type d'analyse
+     * @param name nom du fichier/dossier où l'utilisateur a cliqué
+     * @throws Exception si l'extraction des données du fichiers/dossier a échoué
+     */
     public LeftPanel(JPanel base, String type, String name) throws Exception {
         this.base=base;
         this.type=type;
@@ -43,23 +70,37 @@ public class LeftPanel extends JPanel {
         }
     }
 
+    /**
+     * Instancie un LeftPanel
+     * Ce 3e constructeur sert a faciliter la suppression du ce panneau dans la classe MainWindow
+     */
+    public LeftPanel(){
+        this.setVisible(false);
+    }
+
+    /**
+     * Affiche sur le panneau les commandes disponnible
+     */
     private void createHelp() {
         this.setLayout(new BorderLayout());
         JTextArea helpTxt = new JTextArea();
-        String[] args = {"help"};
+        String[] args = {"helpGui"};
         try{
             Commande c = new Commande(args);
-            System.out.println(c.getConsoleMessage());
             helpTxt.setText(c.getConsoleMessage());
         } catch (Exception e) {
             //La commande help ne peut pas provoquer d'erreur
-            System.out.println("cc");
         }
         this.add(helpTxt);
         base.revalidate();
         base.repaint();
     }
 
+    /**
+     * Affiche sur le panneau les resultats de l'analyse du fichier cliqué par l'utilisateur
+     * Permet à l'utilisateur si il le souhaite d'afficher l'image correspondant à l'analyse
+     * @throws Exception si l'extraction des données du fichier/dossier a échoué
+     */
     private void createAnalyzePanel() throws Exception {
         this.setBorder(new EmptyBorder(10,10,10,10));
         this.setLayout(new BorderLayout());
@@ -124,15 +165,19 @@ public class LeftPanel extends JPanel {
 
     }
 
+    /**
+     * Ouvre une nouvelle fenêtre affichant une image
+     * @param imageIcon l'image à afficher
+     */
     private void openImageWindow(ImageIcon imageIcon) {
         ImageWindow im = new ImageWindow(imageIcon);
         im.setVisible(true);
     }
 
-    public LeftPanel(){
-        this.setVisible(false);
-    }
-
+    /**
+     * Affiche sur le panneau une bare de recherche et offre la possibilité de choisir un critère
+     * Cette methode appelle d'autre methode pour effectuer la recherche et afficher le resultat
+     */
     private void createSearchPanel() {
         this.setBorder(new EmptyBorder(10,10,10,10));
 
@@ -185,6 +230,14 @@ public class LeftPanel extends JPanel {
         });
     }
 
+    /**
+     * Effectue une recherche selon un critère et affiche le resultat de celle ci
+     * @param donneeTxt donnee de la recherche
+     * @param critereActuel critere de la recherche
+     * @param reponseConsole le resultat à écrire
+     * @throws WrongArgumentException si la donnée de la recherche est mauvaise
+     * @throws IOException si l'extraction des données pendant le parcours de l'arborescence échoue
+     */
     private void doSearch(JTextField donneeTxt, String critereActuel, JTextArea reponseConsole) throws WrongArgumentException, IOException {
         switch (critereActuel){
             case "Nom" -> {
@@ -216,6 +269,12 @@ public class LeftPanel extends JPanel {
         }
     }
 
+    /**
+     * Verifie la syntaxe entrée par l'utilisateur
+     * Cette methode sert lorsque l'utilisateur tente d'effectuer une recherche sur deux critère
+     * @param donnee donnée entrée par l'utilisateur
+     * @throws WrongArgumentException si la donnée entrée est mauvaise
+     */
     private void verifSyntaxe(String donnee) throws WrongArgumentException {
         int space =0;
         int i=0;
@@ -230,6 +289,10 @@ public class LeftPanel extends JPanel {
         }
     }
 
+    /**
+     * Affiche sur le panneau deux bloc de texte permettant à l'utilisateur d'entrée un chemin et une capture
+     * Cette methode appelle d'autres methodes qui font la comparaison entre les deux données
+     */
     private void createComparePanel() {
         this.setBorder(new EmptyBorder(10,10,10,10));
 
@@ -277,6 +340,15 @@ public class LeftPanel extends JPanel {
         });
     }
 
+    /**
+     * Effectue la comparaison du chemin d'un dossier et du nom de la capture
+     * Cette methode appelle d'autre methode et affiche le resultat de la comparaison
+     * @param cheminTxt bloc de texte où l'utilisateur à entrée le chemin
+     * @param captureName bloc de texte où l'utilisateur a entrée le nom de la capture
+     * @param reponse le bloc de texte où la reponse doit être écrite
+     * @throws WrongArgumentException si l'utilisateur entre une donnée incorrect
+     * @throws IOException si l'extraction des données d'un fichier a échoué
+     */
     private void doCompare(JTextField cheminTxt,JTextField captureName, JTextArea reponse) throws WrongArgumentException, IOException {
         File fic = new File(cheminTxt.getText());
         if(!fic.isDirectory()){
@@ -288,6 +360,10 @@ public class LeftPanel extends JPanel {
         }
     }
 
+    /**
+     * Affiche sur le panneau un bloc de texte où l'utilisateur entre le chemin d'un dossier à sauvegarder
+     * Cette methode appelle d'autre methode effectuant la sauvegarde
+     */
     private void createSavePanel() {
         this.setBorder(new EmptyBorder(10,10,10,10));
 
@@ -332,11 +408,22 @@ public class LeftPanel extends JPanel {
         });
     }
 
+    /**
+     * Effectue la sauvegarde d'un fichier en instanciant la classe concerné
+     * @param cheminTxt bloc de texte où l'utilisateur à entrée le chemin du dossier à sauvegarder
+     * @param reponse bloc de texte où la reponse doit être écrite
+     * @throws WrongArgumentException si l'utilisateur entre une donnée incorrect
+     * @throws IOException si l'extraction des données d'un fichier a échoué
+     */
     private void doSave(JTextField cheminTxt, JTextArea reponse) throws WrongArgumentException, IOException {
         Sauvegarde save = new Sauvegarde(cheminTxt);
         reponse.setText(save.getMessage());
     }
 
+    /**
+     * Affiche sur le panneau un bloc de texte où l'utilisateur entre le chemin d'un ficher pour voir ses statistiques basiques.
+     * Cette methode appelle d'autres methodes effectuant l'extraction des statistiques et l'affichage.
+     */
     private void createStatPanel(){
         this.setBorder(new EmptyBorder(10,10,10,10));
 
@@ -381,6 +468,10 @@ public class LeftPanel extends JPanel {
         });
     }
 
+    /**
+     * Affiche sur le panneau un bloc de texte où l'utilisateur entre le chemin d'un ficher pour voir ses metadonnées.
+     * Cette methode appelle d'autres methodes effectuant l'extraction des statistiques et l'affichage.
+     */
     private void createInfoPanel(){
         this.setBorder(new EmptyBorder(10,10,10,10));
 
@@ -425,6 +516,13 @@ public class LeftPanel extends JPanel {
         });
     }
 
+    /**
+     * Effectue l'extraction des metadonnée et l'affiche sur le bloc de texte dédié.
+     * Cette classe instancie Fichier et affiche les metadonnées du fichier
+     * @param chemin chemin entrée par l'utilisateur
+     * @param reponse bloc de texte où la reponse sera écrite
+     * @throws Exception si l'extraction des métadonnées échoue
+     */
     private void doInfoAnalyze(String chemin, JTextArea reponse) throws Exception {
         File f = new File(chemin);
         String meta;
@@ -441,16 +539,24 @@ public class LeftPanel extends JPanel {
         base.repaint();
     }
 
+    /**
+     * Effectue l'extraction des statistiques en instanciant la classe Fichier ou Repertoire
+     * Affiche le resultat de l'extraction sur le bloc de texte dédié
+     * @param chemin chemin du fichier/repertoire entrée par l'utilisateur
+     * @param reponse bloc de texte où la reponse doit être écrite
+     * @throws WrongArgumentException si l'utilisateur entre une donnée incorrect
+     * @throws IOException si l'extraction des données d'un fichier/repertoire a échoué
+     */
     private void doStatAnalyze(String chemin, JTextArea reponse) throws WrongArgumentException, IOException {
         File f = new File(chemin);
         String stat;
         if(f.isFile()){
             Fichier fic = new Fichier(chemin);
-            stat=fic.printStatGui(); //CHANGEMENT
+            stat=fic.printStatGui();
         }
         else{
             Repertoire rep = new Repertoire(chemin);
-            stat= rep.printStatGui(); //CHANGEMENT
+            stat= rep.printStatGui();
         }
         reponse.setText(stat);
         base.revalidate();

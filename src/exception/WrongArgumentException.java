@@ -10,6 +10,11 @@ import core.cli.Couleur;
  */
 
 public class WrongArgumentException extends Exception{
+
+    /**
+     * Instancie WrongArgumentException et affiche un message en rouge
+     * @param message le message à écrire
+     */
     public WrongArgumentException(String message) {
 
         super(Couleur.ROUGE+"Erreur : "+ message + Couleur.RESET);

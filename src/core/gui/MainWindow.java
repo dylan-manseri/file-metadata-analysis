@@ -9,16 +9,35 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Cette classe gère l'affichage de la fenêtre principale et toutes les fonctionnalités qui lui sont dédiées
+ *
+ * @author Dylan Manseri
+ * @version 1.0
+ */
 public class MainWindow extends JFrame {
     JButton statButton = new JButton("Statistiques");
     JButton metaButton = new JButton("Metadonnee");
     JButton searchButton = new JButton("Recherche");
     JButton saveButton = new JButton("Sauvegarde");
     JButton helpButton = new JButton("Help");
+    /**
+     * arborescence du repertoire courant
+     */
     JTree dossier;
+    /**
+     * panneau principale de la fenêtre
+     */
     JPanel contentPane = (JPanel) this.getContentPane();
+    /**
+     * panneau de gauche s'affichant uniquement si les button ci-dessus sont cliqué
+     */
     LeftPanel LeftPanel = new LeftPanel();
 
+    /**
+     * Instancie MainWindow et y affiche l'arborescence du repertoire courant
+     * En plus y est affiché une ToolBar en haut
+     */
     public MainWindow(){
         super("Fichier et metadonnee");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -67,6 +86,11 @@ public class MainWindow extends JFrame {
 
     }
 
+    /**
+     * Gere le cas où l'utilisateur clique sur un fichier invalide dans l'arborescence.
+     * Elle affiche un message d'erreur
+     * @param e evennement du clique de la souris
+     */
     private void showError(MouseEvent e) {
         JLabel err = new JLabel("erreur lors de l'extraction");
         err.setBounds(e.getX(),e.getY(),150,30);
@@ -75,12 +99,22 @@ public class MainWindow extends JFrame {
         timer.start();
     }
 
+    /**
+     * Gere le cas où l'utilisateur clique sur un boutton de la fenetre
+     * Cette methode affiche le contenu associé au clique de l'utilisateur
+     * @param clicName nom du bloc cliqué
+     * @throws Exception si une erreur survient lors de l'affichage du contenu
+     */
     private void createAnalyzePanel(String clicName) throws Exception {
         contentPane.remove(LeftPanel);
         LeftPanel = new LeftPanel(contentPane,"analyze", clicName );
         contentPane.add(LeftPanel,BorderLayout.WEST);
     }
 
+    /**
+     * Crée une tool bar avec les options liées à l'extraction des données d'un fichier et le parcours d'une arborescence
+     * @return la tool bar crée
+     */
     private JToolBar createToolBar(){
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
@@ -93,6 +127,10 @@ public class MainWindow extends JFrame {
         return toolBar;
     }
 
+    /**
+     * Gère les evennement liée à la tool bar
+     * Cette methode instancie un Left Panel avec une option different en fonction de l'endroit cliqué
+     */
     private void toolBarButton() {
         statButton.addActionListener((event) -> createLeftPanel("stat"));
         metaButton.addActionListener((event) -> createLeftPanel("info"));
@@ -106,12 +144,21 @@ public class MainWindow extends JFrame {
         helpButton.addActionListener((event) -> createLeftPanel("help"));
     }
 
+    /**
+     * Supprime l'ancien Left Panel (si existe) et en crée un nouveau
+     * @param type type de contenu à afficher sur le panneau
+     */
     private void createLeftPanel(String type) {
         contentPane.remove(LeftPanel);
         contentPane.add(LeftPanel = new LeftPanel(contentPane,type),BorderLayout.WEST);
 
     }
 
+    /**
+     * Cette methode gere le cas où l'utilisateur clique sur le boutton de Sauvegarde
+     * Elle affiche deux possibilité à l'utilisateur comparer ou sauvegarder
+     * @param event evennement de clique de la souris du le bloc
+     */
     private void popUpMenu(MouseEvent event){
         if(SwingUtilities.isLeftMouseButton(event)){
             JPopupMenu pop = new JPopupMenu("option");
@@ -124,6 +171,14 @@ public class MainWindow extends JFrame {
         }
     }
 
+    /**
+     * Algorithme recursif de création d'arboscence en parcourant l'arborescence du repertoire courant
+     * Cette Methode sert a crée l'arbre qui sera affiché sur la fenetre principale
+     * @param fichiers tableau des fichiers/dossier du repertoire courant
+     * @param i iteration récursive
+     * @param racine racine initial
+     * @return racine finale apres lui avoir affecté tous ses noeuds
+     */
     private DefaultMutableTreeNode createRacine(File[] fichiers, int i, DefaultMutableTreeNode racine){
         if(i==fichiers.length){
             return racine;
@@ -151,14 +206,28 @@ public class MainWindow extends JFrame {
         return createRacine(fichiers,i+1,racine);
     }
 
+    /**
+     * Methode créeant un noeud selon un nom
+     * @param name nom du noeud
+     * @return le noeud crée
+     */
     private DefaultMutableTreeNode createNoeud(String name){
         return new DefaultMutableTreeNode(name);
     }
 
+    /**
+     * Methode créant une feuille selon un nom
+     * @param name nom de la feuille
+     * @return la feuille crée
+     */
     private DefaultMutableTreeNode createFeuille(String name){
         return new DefaultMutableTreeNode(name);
     }
 
+    /**
+     * Sert à renvoyer le chemin du repertoire courant
+     * @return le chemin du repertoire courant
+     */
     private Path actualPath(){
         return Paths.get(".").normalize().toAbsolutePath();
     }

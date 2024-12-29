@@ -9,9 +9,22 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 
+/**
+ * Cette classe permet la sauvegarde d'un dossier, elle écrit les information d'un fichier
+ * dans un fichier JSON et stocke ce fichier dans un repertoire crée au préalable
+ *
+ * @author Dylan Manseri
+ * @version 1.0
+ */
 public class Sauvegarde {
     private final HashMap<String, String> donnee=new HashMap<>();
 
+    /**
+     * Crée une instance de la classe Sauvegarde et fait directement la sauvegarde
+     * @param directoryPath chemin du dossier a sauvegarder entré par l'utilisateur
+     * @throws WrongArgumentException si le dossier est invalide ou inexistant
+     * @throws IOException si la lecture des informations du dossier a échoué
+     */
     public Sauvegarde(String directoryPath) throws WrongArgumentException, IOException {
         File directory = new File(directoryPath);
         if(directory.isFile()){
@@ -33,6 +46,13 @@ public class Sauvegarde {
         }
     }
 
+    /**
+     * Crée une instance de la classe Sauvegarde et fait directement la sauvegarde
+     * Ce deuxième constructeur sert au mode graphique
+     * @param cheminTxt bloc de texte où l'utilisateur a écrit le chemin
+     * @throws WrongArgumentException si le dossier est invalide ou inexistant
+     * @throws IOException si l'extraction des informations du dossier a échoué
+     */
     public Sauvegarde(JTextField cheminTxt) throws WrongArgumentException, IOException {
         String directoryPath= cheminTxt.getText();
         File directory = new File(directoryPath);
@@ -56,6 +76,11 @@ public class Sauvegarde {
         }
     }
 
+    /**
+     * Crée un repertoire dans le repertoire courant appelé "save"
+     * @param chemin chemin où le repertoire doit être crée
+     * @throws WrongArgumentException si la création du dossier a échoué
+     */
     public void createDirectory(String chemin) throws WrongArgumentException {
         File rep = new File(chemin);
         if(!rep.exists()){
@@ -68,6 +93,13 @@ public class Sauvegarde {
         }
     }
 
+    /**
+     * Crée le fichier save dans le repertoire crée dédié tout en respectant l'odre de nom des précedant fichiers save crée
+     * @param chemin chemin où la capture doit être crée
+     * @return chemin où la capture a été crée
+     * @throws IOException si la création du fichier a échoué
+     * @throws WrongArgumentException si le nom du fichier n'est pas le bon
+     */
     public String createFile(String chemin) throws IOException, WrongArgumentException {
         int i=0;
         boolean creation=false;
@@ -90,6 +122,13 @@ public class Sauvegarde {
         return chemin;
     }
 
+    /**
+     * Crée le fichier save dans le repertoire crée dédié tout en respectant l'odre de nom des précedant fichiers save crée.
+     * Cette methode sert au constructeur utilisé pour le mode graphique
+     * @param chemin chemin où la capture doit être crée
+     * @throws IOException si la création du fichier a échoué
+     * @throws WrongArgumentException si le nom du fichier n'est pas le bon
+     */
     public void createFileGui(String chemin) throws IOException, WrongArgumentException {
         int i=0;
         boolean creation=false;
@@ -114,6 +153,11 @@ public class Sauvegarde {
         donnee.put("message",txt);
     }
 
+    /**
+     * Cette methode renvoie le message liée à la reussite de l'operation stocké pendant création du fichier
+     * Cette methode utile qu'au methode utile au mode graphique
+     * @return le message stocké dans la HashMap des données
+     */
     public String getMessage(){
         return donnee.get("message");
     }

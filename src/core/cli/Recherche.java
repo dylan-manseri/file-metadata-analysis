@@ -8,12 +8,38 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * Cette sert à la recherche d'un fichier dans une arboresence de repertoire
+ * Il peut rechercher selon des critère qui seront entrée par l'utilisateur
+ *
+ * @author Dylan Manseri
+ * @version 1.0
+ */
 public class Recherche {
+    /**
+    critère de la recherche
+     */
     private final String option1;
+    /**
+     * donnee entrée par l'utilisateur
+     */
     private String donnee1;
+    /**
+     * les fichier trouvé si il est trouvé
+     */
     private File fileFound;
+    /**
+     * resultat de la recherche
+     */
     private String consoleMessage;
 
+    /**
+     * Instancie la classe recherche et fais la recherche selon le crière
+     * @param o type de critere de la recherche
+     * @param d critere de la rechercher
+     * @throws IOException si l'analyse d'un fichier lors du parcours de l'arborescence provoque une erreur
+     * @throws WrongArgumentException si l'argument entrée est incorrect
+     */
     public Recherche(String o, String d) throws IOException, WrongArgumentException {
         this.option1 =o;
         this.donnee1 =d;
@@ -97,6 +123,17 @@ public class Recherche {
         }
     }
 
+    /**
+     * Instancie la classe recherche et fais la recherche selon deux critère (année et dimension).
+     * Ce constructeur sert au cas de figure où l'utilisateur décide de faire une recherche
+     * selon deux critère et prend en compte le cas où il inverse les deux ecritures.
+     * @param option1 type de critere (--year ou --dim) entrée par l'utilisateur
+     * @param option2 2e type de critere (--year ou --dim) entrée par l'utilisateur
+     * @param donnee1 critère de la recherche (l'année ou la dimension)
+     * @param donnee2 2e critère de la recherche (l'année ou la dimension)
+     * @throws WrongArgumentException si le repertoire courant est invalide
+     * @throws IOException si l'analyse d'un fichier lors du parcourt de l'arborescence provoque une erreur
+     */
     public Recherche(String option1, String option2, String donnee1, String donnee2) throws WrongArgumentException, IOException {
         this.option1=option1;
         this.donnee1=donnee1;
@@ -132,8 +169,9 @@ public class Recherche {
             int taille = result1.size();
             if(taille>0){
                 consoleMessage = taille+" fichiers trouve de taille >= "+ donnee2 +" datant de "+donnee1+" :\n";
-                for (Path path : result1) {
-                    consoleMessage += path.getFileName()+"\n";
+                Iterator<Path> it = result1.iterator();
+                while(it.hasNext()) {
+                    consoleMessage += it.next().getFileName()+"\n";
                 }
             }
             else{
@@ -145,6 +183,14 @@ public class Recherche {
         }
     }
 
+    /**
+     * Algorithme recursif parcourant l'arborescence et compare toutes les images entre elles selon leur nom.
+     * @param name nom du fichier complet ou incomplet dont la recherche est l'objet
+     * @param fichiers ensembles des fichiers/dossiers du repertoire courant
+     * @param i iteration de la recursivité
+     * @param result resultat courant, est modifiable à chaque iteration si la ressemblance est meilleure
+     * @return le chemin du fichiers trouvé
+     */
     private Path rechercheParNom(String name, File[] fichiers, int i, Path result){
         if(i==fichiers.length){
             return result;
@@ -175,6 +221,15 @@ public class Recherche {
         return rechercheParNom(name, fichiers, i+1,result);
     }
 
+    /**
+     * Algorithme recursif parcourant l'arborescence et compare leur année de création avec celle du critère.
+     * @param annee année du fichier complete dont la recherche est l'objet
+     * @param fichiers ensembles des fichiers/dossiers du repertoire courant
+     * @param i iteration de la recursivité
+     * @param result tableau repertoriant tous les fichiers crée la même année que l'année entrée
+     * @return le tableau de tous les fichiers respectant le critère
+     * @throws IOException si l'extraction de l'année d'un fichier à échoué
+     */
     private ArrayList<Path> rechercheParAnnee(String annee, File[] fichiers, int i, ArrayList<Path> result) throws IOException {
         if(i==fichiers.length){
             return result;
@@ -200,6 +255,15 @@ public class Recherche {
         return rechercheParAnnee(annee,fichiers,i+1,result);
     }
 
+    /**
+     * Algorithme recursif parcourant l'arborescence et compare leur date avec celle du critère.
+     * @param date date de création complète du fichier dont la recherche est l'objet.
+     * @param fichiers ensembles des fichiers/dossiers du repertoire courant.
+     * @param i itération de la récursivité.
+     * @param result tableau repartoriant tous les fichiers crée à la date entrée.
+     * @return le tableau de tous les fichiers respectant le critère.
+     * @throws IOException si l'extraction de l'année d'un fichiers à échoué.
+     */
     private ArrayList<Path> rechercheParDate(String date, File[] fichiers, int i, ArrayList<Path> result) throws IOException {
         if(i==fichiers.length){
             return result;
@@ -224,6 +288,16 @@ public class Recherche {
         return rechercheParDate(date,fichiers,i+1,result);
     }
 
+    /**
+     * Algorithme recursif parcourant l'arborescence et compare leur dimension avec celle du critère.
+     * @param x largeur dont la recherche est l'objet
+     * @param y longueur dont la recherche est l'objet
+     * @param fichiers ensemble des fichiers/dossier du repertoire courant
+     * @param i itération de la recursivité
+     * @param result tableau répertoriant tous les fichiers images crée pendant l'année entrée
+     * @return le tableau de tous les fichiers images respectant le critère.
+     * @throws IOException si l'extraction de la dimension à échooué
+     */
     private ArrayList<Path> rechercheParDim(int x, int y, File[]fichiers, int i, ArrayList<Path> result) throws IOException {
         if(i==fichiers.length){
             return result;
@@ -252,6 +326,17 @@ public class Recherche {
         return rechercheParDim(x,y,fichiers,i+1,result);
     }
 
+    /**
+     * Methode centralisant le recherche pour deux critère et met le resultat dans un tableau.
+     * Cette methode appelle les deux methodes associé aux critère de l'année et de la dimension.
+     * Elle crée un tableau où ets stocké toutes les valeurs et des deux tableaux en supprimant les doublons.
+     * @param x largeur dont la recherche est l'objet.
+     * @param y longueur dont la recherche est l'objet.
+     * @param annee année du fichier complete dont la recherche est l'objet.
+     * @param fichiers ensemble des fichiers/dossiers du repertoire courant.
+     * @return le tableau de tous les fichiers images respectant les critère.
+     * @throws IOException si l'extraction de la dimension à échooué .
+     */
     private ArrayList<Path> rechercheParDimAnnee(int x, int y, String annee,ArrayList<Path> fichiers) throws IOException {
         Iterator<Path> it = fichiers.iterator();
         ArrayList<Path> result = new ArrayList<>();
@@ -270,6 +355,16 @@ public class Recherche {
         return result;
     }
 
+    /**
+     * Algorithme recursif parcourant l'arborescence et compare toutes les images entre elles selon leur nom.
+     * Cette methode suppose que l'image EST dans le dossier donc ne renvoie pas d'erreur.
+     * Cette methode n'est utile qu'au mode graphique car en cliquant sur un fichier de l'arborescence celui-ci est forcement dans l'arborescence.
+     * @param name nom du fichier dont la recherche est l'objet.
+     * @param fichiers ensemble des fichiers/dossiers du repertoire courant.
+     * @param i itération de la recursivité.
+     * @param parent repertoire parent (est renvoyé si la recherche resulte sur rien)
+     * @return le fichier resultant de la recherche.
+     */
     private File recherchePartielParNom(String name, File[] fichiers, int i, File parent){
         if(i==fichiers.length){
             return parent;
@@ -294,23 +389,49 @@ public class Recherche {
         return recherchePartielParNom(name, fichiers, i+1, parent);
     }
 
+    /**
+     * Methode comparant la dimensions de deux images
+     * @param x largeur de la 1ere image
+     * @param y longueur de la 1ere images
+     * @param im 2e image
+     * @return un boolean vrai ou faux selon la comparaison
+     * @throws IOException si l'extraction des dimensions de la 2e image échoue
+     */
     private boolean verifDim(int x, int y, BufferedImage im) throws IOException {
         int[] dim = getDimension(im);
         return dim[0] >= x && dim[1] >= y;
     }
 
+    /**
+     * Methode comparant l'année de création de deux images
+     * @param annee année de la 1ere image
+     * @param f instance de la classe File relié à la 2e image
+     * @return un bolléen vrai ou faux selon la comparaison
+     * @throws IOException si l'extraction de l'année de création de la 2e image a échoué
+     */
     private boolean verifAnnee(String annee, File f) throws IOException {
         String dateCreation = getCreationDate(f);
         String anneeFichier = dateCreation.substring(0,dateCreation.indexOf("-"));
         return anneeFichier.equals(annee);
     }
 
-    private int[] getDimension(BufferedImage image) throws IOException {
+    /**
+     * Methode qui extrait la dimension d'une image
+     * @param image l'image dont il est question
+     * @return la dimension de l'image sous forme de tableau
+     */
+    private int[] getDimension(BufferedImage image) {
         int largeur = image.getWidth();
         int hauteur = image.getHeight();
         return new int[]{largeur,hauteur};
     }
 
+    /**
+     * Compare deux String caractère par caractère comptant le nombre de caractère en commun.
+     * @param var1 prermière variable
+     * @param var2 deuxième variable
+     * @return le nombre de caractère en commun
+     */
     private int compareStr(String var1, String var2){
         if(var1==null || var2==null){
             return 0;
@@ -324,6 +445,11 @@ public class Recherche {
         return k;
     }
 
+    /**
+     * Teste si un fichier est une image
+     * @param p chemin du fichier
+     * @return un booléen vrai ou faux selon le teste
+     */
     private boolean isImage(Path p){
         String nom = p.getFileName().toString();
         if(p.toFile().isFile()){
@@ -335,7 +461,11 @@ public class Recherche {
         }
         return false;
     }
-
+    /**
+     * Teste si un fichier est une image.
+     * Cette classe sert au mode graphique.
+     * @return un booléen vrai ou faux selon le teste
+     */
     public boolean isImage(){
         String nom = fileFound.getName();
         if(fileFound.isFile()){
@@ -348,14 +478,30 @@ public class Recherche {
         return false;
     }
 
+    /**
+     * renvoie la date de création d'un fichier
+     * @param f le fichier dont il est question
+     * @return la date de création
+     * @throws IOException si l'extraction de la date de création a échoué
+     */
     public String getCreationDate(File f) throws IOException {
         return Files.getAttribute(f.toPath(),"creationTime").toString().substring(0,10);
     }
 
+    /**
+     * Renvoie le message de la console (resultat de l'analyse)
+     * Cette methode sert uniquement au mode de recherche par deux critère
+     * @return l'attribut consoleMessage
+     */
     public String getConsoleMessage() {
         return consoleMessage;
     }
 
+    /**
+     * Renvoie le fichier trouvé (resultat de la recherche)
+     * Cette methode sert uniquement au mod graphique.
+     * @return l'attribut fileFound
+     */
     public File getFileFound(){
         return fileFound;
     }
