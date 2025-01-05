@@ -7,11 +7,14 @@ import core.cli.Repertoire;
 import core.cli.save.Compare;
 import core.cli.save.Sauvegarde;
 import exception.WrongArgumentException;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -141,22 +144,22 @@ public class LeftPanel extends JPanel {
         String chemin = r.getFileFound().getAbsolutePath();
         doStatAnalyze(chemin, statConsole);
         if(r.isImage()){
-            imageIcon = new ImageIcon(chemin);
-            Image scaledImage = imageIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+            BufferedImage b = ImageIO.read(new File(chemin));
+            Image scaledImage = b.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
             ImageIcon icon = new ImageIcon(scaledImage);
             imageLabel = new JLabel(icon);
             image.setVisible(true);
             imageLabel.setVisible(true);
             afficher.setVisible(true);
             doInfoAnalyze(chemin, metaConsole);
+            afficher.addActionListener(e -> openImageWindow(new ImageIcon(b)));
         }
         else{
             metaConsole.setText("Les metadonnees ne s'affichent que pour les images");
         }
         box.add(image); box.add(imageLabel); box.add(afficher);
         box.add(stat); box.add(statScroll); box.add(meta); box.add(metaScroll);
-        ImageIcon finalImageIcon = imageIcon;
-        afficher.addActionListener(e -> openImageWindow(finalImageIcon));
+
         this.setPreferredSize(new Dimension(400,0));
         this.setLayout(new BorderLayout());
         this.add(theBox);

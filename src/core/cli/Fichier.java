@@ -106,13 +106,13 @@ public class Fichier {
         try{
             String mere = chemin.getParent().getFileName().toString();
             String nom = chemin.getFileName().toString();
-            String type = nom.substring(nom.length()-3);
+            String type = nom.substring(nom.length()-4);
             String mess="est ";
 
-            if(type.equals("txt") || type.equals("csv")){
+            if(type.equals(".txt") || type.equals(".csv")){
                 mess+="un fichier texte\n";
             }
-            else if(type.equals("jpg") || type.equals("png") || type.equals("webp")){
+            else if(type.equals(".jpg") || type.equals(".png") || type.equals("webp")){
                 mess+="un fichier image\n";
             }
             else{
